@@ -12,13 +12,13 @@ type CalendarGridProps = {
   days: CalendarDay[];
   range: CalendarDateRange;
   previewRange: CalendarDateRange | null;
-  animationClassName: string;
   onSelect: (iso: string) => void;
   onHover: (iso: string | null) => void;
   hasActiveSelection: boolean;
   userEvents: CalendarEvent[];
   publicHolidays: CalendarEvent[];
   onClearSelection: () => void;
+  onAddRangeNote: () => void;
   onAddEvent: (iso: string) => void;
   onDeleteEvent: (eventId: string) => void;
 };
@@ -27,13 +27,13 @@ export function CalendarGrid({
   days,
   range,
   previewRange,
-  animationClassName,
   onSelect,
   onHover,
   hasActiveSelection,
   userEvents,
   publicHolidays,
   onClearSelection,
+  onAddRangeNote,
   onAddEvent,
   onDeleteEvent,
 }: CalendarGridProps) {
@@ -122,10 +122,7 @@ export function CalendarGrid({
   }
 
   return (
-    <div
-      ref={gridRef}
-      className={`relative grid grid-cols-7 gap-y-2 [perspective:1200px] ${animationClassName}`}
-    >
+    <div ref={gridRef} className="relative grid grid-cols-7 gap-y-2">
       {days.map((day) => {
         const dayUserEvents = userEvents.filter((event) => event.iso === day.iso);
         const dayPublicHolidays = publicHolidays.filter((event) => event.iso === day.iso);
@@ -144,13 +141,13 @@ export function CalendarGrid({
             markers={markers}
             onSelect={onSelect}
             onClearSelection={onClearSelection}
+            onAddRangeNote={onAddRangeNote}
             onHover={onHover}
             onHoverCardOpen={openHoverCard}
             onHoverCardClose={closeHoverCardSoon}
           />
         );
       })}
-
       {hoverCard && !hasActiveSelection ? (
         <EventPopover
           isOpen

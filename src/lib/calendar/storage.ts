@@ -2,6 +2,7 @@ import { CalendarEvent } from "@/types/calendar";
 
 const notesPrefix = "wall-calendar-note";
 const eventsKey = "wall-calendar-events";
+const rangeNotesKey = "wall-calendar-range-notes";
 
 export function getMonthNoteStorageKey(monthKey: string) {
   return `${notesPrefix}:${monthKey}`;
@@ -21,6 +22,38 @@ export function writeMonthNote(monthKey: string, value: string) {
   }
 
   window.localStorage.setItem(getMonthNoteStorageKey(monthKey), value);
+}
+
+export function getRangeNoteKey(startIso: string, endIso: string) {
+  return `${startIso}:${endIso}`;
+}
+
+export function readRangeNotes() {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  const value = window.localStorage.getItem(rangeNotesKey);
+
+  if (!value) {
+    return {};
+  }
+
+  try {
+    const parsedValue = JSON.parse(value);
+
+    return parsedValue && typeof parsedValue === "object" ? parsedValue : {};
+  } catch {
+    return {};
+  }
+}
+
+export function writeRangeNotes(value: Record<string, string>) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(rangeNotesKey, JSON.stringify(value));
 }
 
 export function readCalendarEvents() {

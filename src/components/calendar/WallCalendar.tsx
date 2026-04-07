@@ -8,6 +8,7 @@ import { JumpToTodayButton } from "@/components/calendar/JumpToTodayButton";
 import { KeyboardShortcutsButton } from "@/components/calendar/KeyboardShortcutsButton";
 import { KeyboardShortcutsDialog } from "@/components/calendar/KeyboardShortcutsDialog";
 import { NotesPanel } from "@/components/calendar/NotesPanel";
+import { RangeNoteDialog } from "@/components/calendar/RangeNoteDialog";
 import { TopRings } from "@/components/calendar/TopRings";
 import {
   getCalendarDays,
@@ -15,17 +16,19 @@ import {
   getPreviewRange,
   toMonthKey,
 } from "@/lib/calendar/date";
+import { animateCalendarFaceMonthChange } from "@/lib/calendar/animation";
 import { fetchHolidays } from "@/lib/calendar/holidays";
 import {
+  getRangeNoteKey,
   readCalendarEvents,
   readMonthNote,
+  readRangeNotes,
   writeCalendarEvents,
   writeMonthNote,
+  writeRangeNotes,
 } from "@/lib/calendar/storage";
 import { getMonthImage } from "@/lib/calendar/theme";
 import { CalendarDateRange, CalendarEvent } from "@/types/calendar";
-
-const animationDuration = 240;
 
 type WallCalendarProps = {
   initialMonthIso: string;
@@ -46,16 +49,20 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
   const [publicHolidaysByYear, setPublicHolidaysByYear] = useState<
     Record<number, CalendarEvent[]>
   >({});
-  const [animationClassName, setAnimationClassName] = useState(
-    "calendar-grid-flip-in",
-  );
+  const [rangeNotes, setRangeNotes] = useState<Record<string, string>>({});
   const [eventDraft, setEventDraft] = useState<{
     iso: string;
     label: string;
     symbol: string;
     tone: string;
   } | null>(null);
+  const [rangeNoteDraft, setRangeNoteDraft] = useState<{
+    start: string;
+    end: string;
+  } | null>(null);
   const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = useState(false);
+  const calendarFaceRef = useRef<HTMLDivElement | null>(null);
+  const isMonthAnimatingRef = useRef(false);
   const notesTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const monthKey = useMemo(() => toMonthKey(visibleMonth), [visibleMonth]);
@@ -79,6 +86,8 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
   const visibleYear = visibleMonth.getFullYear();
   const publicHolidays = publicHolidaysByYear[visibleYear] ?? [];
   const todayDate = useMemo(() => new Date(`${todayIso}T00:00:00`), [todayIso]);
+  const selectedRangeNoteKey =
+    range.start && range.end ? getRangeNoteKey(range.start, range.end) : null;
   const isTodayMonthVisible =
     visibleMonth.getFullYear() === todayDate.getFullYear() &&
     visibleMonth.getMonth() === todayDate.getMonth();
@@ -89,6 +98,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
 
   useEffect(() => {
     setUserEvents(readCalendarEvents());
+    setRangeNotes(readRangeNotes());
   }, []);
 
   useEffect(() => {
@@ -98,6 +108,10 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
   useEffect(() => {
     writeCalendarEvents(userEvents);
   }, [userEvents]);
+
+  useEffect(() => {
+    writeRangeNotes(rangeNotes);
+  }, [rangeNotes]);
 
   useEffect(() => {
     if (publicHolidaysByYear[visibleYear]) {
@@ -133,34 +147,64 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
     };
   }, [publicHolidaysByYear, visibleYear]);
 
-  const changeMonth = useCallback((offset: number) => {
-    setAnimationClassName("calendar-grid-flip-out");
+  const animateToMonth = useCallback(
+    (nextMonthDate: Date) => {
+      const normalizedNextMonth = new Date(
+        nextMonthDate.getFullYear(),
+        nextMonthDate.getMonth(),
+        1,
+      );
 
-    window.setTimeout(() => {
-      setVisibleMonth((currentMonth) => {
-        return new Date(
-          currentMonth.getFullYear(),
-          currentMonth.getMonth() + offset,
-          1,
-        );
+      if (
+        normalizedNextMonth.getFullYear() === visibleMonth.getFullYear() &&
+        normalizedNextMonth.getMonth() === visibleMonth.getMonth()
+      ) {
+        return;
+      }
+
+      if (isMonthAnimatingRef.current) {
+        return;
+      }
+
+      const faceElement = calendarFaceRef.current;
+
+      if (!faceElement || typeof faceElement.animate !== "function") {
+        setVisibleMonth(normalizedNextMonth);
+        return;
+      }
+
+      isMonthAnimatingRef.current = true;
+      animateCalendarFaceMonthChange({
+        faceElement,
+        currentMonth: visibleMonth,
+        nextMonth: normalizedNextMonth,
+        onMonthSwap: () => {
+          setVisibleMonth(normalizedNextMonth);
+        },
+        onComplete: () => {
+          isMonthAnimatingRef.current = false;
+        },
       });
-      setAnimationClassName("calendar-grid-flip-in");
-    }, animationDuration);
-  }, []);
+    },
+    [visibleMonth],
+  );
+
+  const changeMonth = useCallback(
+    (offset: number) => {
+      animateToMonth(
+        new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + offset, 1),
+      );
+    },
+    [animateToMonth, visibleMonth],
+  );
 
   const setVisibleMonthParts = useCallback(
     (nextYear: number, nextMonth: number) => {
-      setAnimationClassName("calendar-grid-flip-out");
-
-      window.setTimeout(() => {
-        setVisibleMonth(new Date(nextYear, nextMonth, 1));
-        setAnimationClassName("calendar-grid-flip-in");
-      }, animationDuration);
+      animateToMonth(new Date(nextYear, nextMonth, 1));
     },
-    [],
+    [animateToMonth],
   );
 
-  //keyboard shortcuts
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       const target = event.target as HTMLElement | null;
@@ -170,7 +214,12 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
         tagName === "TEXTAREA" ||
         target?.isContentEditable;
 
-      if (isTypingTarget || eventDraft || isKeyboardShortcutsOpen) {
+      if (
+        isTypingTarget ||
+        eventDraft ||
+        rangeNoteDraft ||
+        isKeyboardShortcutsOpen
+      ) {
         return;
       }
 
@@ -220,6 +269,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
     changeMonth,
     eventDraft,
     isKeyboardShortcutsOpen,
+    rangeNoteDraft,
     setVisibleMonthParts,
     visibleMonth,
   ]);
@@ -272,6 +322,17 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
     });
   }
 
+  function handleAddRangeNote() {
+    if (!range.start || !range.end) {
+      return;
+    }
+
+    setRangeNoteDraft({
+      start: range.start,
+      end: range.end,
+    });
+  }
+
   function handleSaveEvent(value: {
     label: string;
     symbol: string;
@@ -304,6 +365,42 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
     );
   }
 
+  function handleSaveRangeNote(value: string) {
+    if (!rangeNoteDraft) {
+      return;
+    }
+
+    const noteKey = getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end);
+
+    setRangeNotes((currentRangeNotes) => {
+      if (!value) {
+        const nextRangeNotes = { ...currentRangeNotes };
+
+        delete nextRangeNotes[noteKey];
+
+        return nextRangeNotes;
+      }
+
+      return {
+        ...currentRangeNotes,
+        [noteKey]: value,
+      };
+    });
+
+    setRangeNoteDraft(null);
+    clearRange();
+  }
+
+  function handleRemoveRangeNote(rangeNoteKey: string) {
+    setRangeNotes((currentRangeNotes) => {
+      const nextRangeNotes = { ...currentRangeNotes };
+
+      delete nextRangeNotes[rangeNoteKey];
+
+      return nextRangeNotes;
+    });
+  }
+
   function getEventDateLabel() {
     if (!eventDraft) {
       return "";
@@ -313,42 +410,115 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
     return `${getMonthName(draftDate.getMonth())} ${draftDate.getDate()}, ${draftDate.getFullYear()}`;
   }
 
+  function formatRangeLabel(startIso: string, endIso: string) {
+    const startDate = new Date(`${startIso}T00:00:00`);
+    const endDate = new Date(`${endIso}T00:00:00`);
+    const startDay = startDate.getDate();
+    const endDay = endDate.getDate();
+    const startMonth = getMonthName(startDate.getMonth());
+    const endMonth = getMonthName(endDate.getMonth());
+    const startYear = startDate.getFullYear();
+    const endYear = endDate.getFullYear();
+
+    if (startMonth === endMonth && startYear === endYear) {
+      return `${startDay}-${endDay} ${endMonth}, ${endYear}`;
+    }
+
+    return `${startDay} ${startMonth}, ${startYear} - ${endDay} ${endMonth}, ${endYear}`;
+  }
+
+  function getRangeNoteLabel() {
+    if (!rangeNoteDraft) {
+      return "";
+    }
+
+    return formatRangeLabel(rangeNoteDraft.start, rangeNoteDraft.end);
+  }
+
+  function getSelectedRangeLabel() {
+    if (!range.start || !range.end) {
+      return null;
+    }
+
+    return formatRangeLabel(range.start, range.end);
+  }
+
+  function getRangeLabelFromKey(rangeNoteKey: string) {
+    const [startIso, endIso] = rangeNoteKey.split(":");
+
+    if (!startIso || !endIso) {
+      return rangeNoteKey;
+    }
+
+    return formatRangeLabel(startIso, endIso);
+  }
+
+  const selectedRangeLabel = getSelectedRangeLabel();
+  const rangeNoteItems = Object.entries(rangeNotes)
+    .map(([key, value]) => ({
+      key,
+      label:
+        key === selectedRangeNoteKey && selectedRangeLabel
+          ? selectedRangeLabel
+          : getRangeLabelFromKey(key),
+      note: value,
+      isActive: key === selectedRangeNoteKey,
+    }))
+    .sort((firstItem, secondItem) => {
+      if (firstItem.isActive && !secondItem.isActive) {
+        return -1;
+      }
+
+      if (!firstItem.isActive && secondItem.isActive) {
+        return 1;
+      }
+
+      return secondItem.key.localeCompare(firstItem.key);
+    });
+
   return (
     <div className="calendar-card relative w-full max-w-6xl overflow-hidden rounded-[28px] bg-[var(--calendar-paper)]">
       <TopRings />
 
-      <HeroImagePanel image={monthImage} month={monthName} year={year} />
+      <div
+        ref={calendarFaceRef}
+        className="will-change-transform"
+      >
+        <HeroImagePanel image={monthImage} month={monthName} year={year} />
 
-      <div className="relative z-30 flex flex-col gap-10 px-5 py-6 sm:px-8 md:flex-row md:gap-14 md:px-10 md:py-10 lg:px-12">
-        <CalendarPanel
-          month={visibleMonth.getMonth()}
-          year={year}
-          yearOptions={yearOptions}
-          days={days}
-          range={range}
-          previewRange={previewRange}
-          animationClassName={animationClassName}
-          onSelect={handleSelectDate}
-          onHover={handleHoverDate}
-          hasActiveSelection={Boolean(range.start)}
-          userEvents={userEvents}
-          publicHolidays={publicHolidays}
-          onClearSelection={clearRange}
-          onAddEvent={handleAddEvent}
-          onDeleteEvent={handleDeleteEvent}
-          onMonthChange={(month) => setVisibleMonthParts(year, month)}
-          onYearChange={(nextYear) =>
-            setVisibleMonthParts(nextYear, visibleMonth.getMonth())
-          }
-          onPreviousMonth={() => changeMonth(-1)}
-          onNextMonth={() => changeMonth(1)}
-        />
+        <div className="relative z-30 flex flex-col gap-10 px-5 py-6 sm:px-8 md:flex-row md:gap-14 md:px-10 md:py-10 lg:px-12">
+          <CalendarPanel
+            month={visibleMonth.getMonth()}
+            year={year}
+            yearOptions={yearOptions}
+            days={days}
+            range={range}
+            previewRange={previewRange}
+            onSelect={handleSelectDate}
+            onHover={handleHoverDate}
+            hasActiveSelection={Boolean(range.start)}
+            userEvents={userEvents}
+            publicHolidays={publicHolidays}
+            onClearSelection={clearRange}
+            onAddRangeNote={handleAddRangeNote}
+            onAddEvent={handleAddEvent}
+            onDeleteEvent={handleDeleteEvent}
+            onMonthChange={(month) => setVisibleMonthParts(year, month)}
+            onYearChange={(nextYear) =>
+              setVisibleMonthParts(nextYear, visibleMonth.getMonth())
+            }
+            onPreviousMonth={() => changeMonth(-1)}
+            onNextMonth={() => changeMonth(1)}
+          />
 
-        <NotesPanel
-          value={note}
-          onChange={setNote}
-          textareaRef={notesTextareaRef}
-        />
+          <NotesPanel
+            value={note}
+            onChange={setNote}
+            rangeNotes={rangeNoteItems}
+            onRemoveRangeNote={handleRemoveRangeNote}
+            textareaRef={notesTextareaRef}
+          />
+        </div>
       </div>
 
       <div className="fixed right-4 bottom-4 z-40 flex items-center gap-3 sm:right-6 sm:bottom-6">
@@ -380,6 +550,29 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
         dateLabel={getEventDateLabel()}
         onClose={() => setEventDraft(null)}
         onSave={handleSaveEvent}
+      />
+
+      <RangeNoteDialog
+        key={
+          rangeNoteDraft
+            ? `${rangeNoteDraft.start}-${rangeNoteDraft.end}-${
+                rangeNotes[
+                  getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end)
+                ] ?? ""
+              }`
+            : "range-note-dialog"
+        }
+        isOpen={Boolean(rangeNoteDraft)}
+        rangeLabel={getRangeNoteLabel()}
+        initialValue={
+          rangeNoteDraft
+            ? rangeNotes[
+                getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end)
+              ] ?? ""
+            : ""
+        }
+        onClose={() => setRangeNoteDraft(null)}
+        onSave={handleSaveRangeNote}
       />
 
       <KeyboardShortcutsDialog

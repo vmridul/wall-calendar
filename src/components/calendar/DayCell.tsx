@@ -1,3 +1,4 @@
+import { PencilIcon } from "@/components/calendar/icons/PencilIcon";
 import { EventMarker } from "@/components/calendar/EventMarker";
 import {
   CalendarEvent,
@@ -14,6 +15,7 @@ type DayCellProps = {
   markers: CalendarEvent[];
   onSelect: (iso: string) => void;
   onClearSelection: () => void;
+  onAddRangeNote: () => void;
   onHover: (iso: string | null) => void;
   onHoverCardOpen: (payload: {
     day: CalendarDay;
@@ -44,6 +46,7 @@ export function DayCell({
   markers,
   onSelect,
   onClearSelection,
+  onAddRangeNote,
   onHover,
   onHoverCardOpen,
   onHoverCardClose,
@@ -65,22 +68,37 @@ export function DayCell({
   return (
     <div className="group relative flex min-h-14 justify-center py-1 hover:z-20">
       {showsSelectedDayCount ? (
-        <span className="absolute -top-5 left-1/2 z-20 inline-flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--calendar-accent)] shadow-sm ring-1 ring-slate-200">
-          <span>{selectedDayCount} days</span>
+        <div className="absolute -top-5 left-1/2 z-20 inline-flex -translate-x-1/2 items-center gap-1.5">
           {showsClearSelection ? (
             <button
               type="button"
               onClick={(event) => {
                 event.stopPropagation();
-                onClearSelection();
+                onAddRangeNote();
               }}
-              className="flex h-3.5 w-3.5 items-center justify-center rounded-full text-[var(--calendar-accent)] transition hover:bg-[var(--calendar-accent-soft)]"
-              aria-label="Clear selected range"
+              className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--calendar-accent)] text-white shadow-sm transition hover:opacity-90"
+              aria-label="Add note for selected range"
             >
-              <span className="text-[10px] leading-none">×</span>
+              <PencilIcon className="h-2.5 w-2.5" />
             </button>
           ) : null}
-        </span>
+          <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--calendar-accent)] shadow-sm ring-1 ring-slate-200">
+            <span>{selectedDayCount} days</span>
+            {showsClearSelection ? (
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onClearSelection();
+                }}
+                className="flex h-3.5 w-3.5 items-center justify-center rounded-full text-[var(--calendar-accent)] transition hover:bg-[var(--calendar-accent-soft)]"
+                aria-label="Clear selected range"
+              >
+                <span className="text-[10px] leading-none">×</span>
+              </button>
+            ) : null}
+          </span>
+        </div>
       ) : null}
 
       {(isBetween || isStart || isEnd || showsPreviewTail) && (

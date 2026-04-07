@@ -35,6 +35,10 @@ textarea {
   font: inherit;
 }
 
+button:not(:disabled) {
+  cursor: pointer;
+}
+
 ::selection {
   background: rgba(30, 163, 216, 0.2);
 }
@@ -87,46 +91,5 @@ textarea {
     --notes-font-size: 1.125rem;
     --notes-line-height: 2.35rem;
     --notes-rule-offset: calc(var(--notes-line-height) - 0.45rem);
-  }
-}
-
-.calendar-grid-flip-out {
-  animation: calendar-flip-out 0.24s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  transform-origin: center;
-}
-
-.calendar-grid-flip-in {
-  animation: calendar-flip-in 0.24s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  transform-origin: center;
-}
-
-@keyframes calendar-flip-out {
-  0% {
-    opacity: 1;
-    transform: rotateY(0deg);
-  }
-
-  100% {
-    opacity: 0;
-    transform: rotateY(82deg);
-  }
-}
-
-@keyframes calendar-flip-in {
-  0% {
-    opacity: 0;
-    transform: rotateY(-82deg);
-  }
-
-  100% {
-    opacity: 1;
-    transform: rotateY(0deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .calendar-grid-flip-in,
-  .calendar-grid-flip-out {
-    animation: none;
   }
 }

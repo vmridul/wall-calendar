@@ -14,13 +14,13 @@ type CalendarPanelProps = {
   days: CalendarDay[];
   range: CalendarDateRange;
   previewRange: CalendarDateRange | null;
-  animationClassName: string;
   onSelect: (iso: string) => void;
   onHover: (iso: string | null) => void;
   hasActiveSelection: boolean;
   userEvents: CalendarEvent[];
   publicHolidays: CalendarEvent[];
   onClearSelection: () => void;
+  onAddRangeNote: () => void;
   onAddEvent: (iso: string) => void;
   onDeleteEvent: (eventId: string) => void;
   onMonthChange: (month: number) => void;
@@ -36,13 +36,13 @@ export function CalendarPanel({
   days,
   range,
   previewRange,
-  animationClassName,
   onSelect,
   onHover,
   hasActiveSelection,
   userEvents,
   publicHolidays,
   onClearSelection,
+  onAddRangeNote,
   onAddEvent,
   onDeleteEvent,
   onMonthChange,
@@ -66,13 +66,13 @@ export function CalendarPanel({
         days={days}
         range={range}
         previewRange={previewRange}
-        animationClassName={animationClassName}
         onSelect={onSelect}
         onHover={onHover}
         hasActiveSelection={hasActiveSelection}
         userEvents={userEvents}
         publicHolidays={publicHolidays}
         onClearSelection={onClearSelection}
+        onAddRangeNote={onAddRangeNote}
         onAddEvent={onAddEvent}
         onDeleteEvent={onDeleteEvent}
       />

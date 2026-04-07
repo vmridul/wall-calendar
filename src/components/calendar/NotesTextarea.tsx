@@ -23,8 +23,10 @@ export function NotesTextarea({
         ref={textareaRef}
         aria-label="Monthly notes"
         value={value}
-        onChange={(event) => handleChange(event.target.value, event.currentTarget)}
-        placeholder="Write your memos here..."
+        onChange={(event) =>
+          handleChange(event.target.value, event.currentTarget)
+        }
+        placeholder="Type your notes here..."
         className="notes-input min-h-[320px] overflow-hidden px-0 md:min-h-[380px]"
       />
     </div>

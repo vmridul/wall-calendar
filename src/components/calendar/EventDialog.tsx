@@ -26,10 +26,12 @@ export function EventDialog({
 }: EventDialogProps) {
   const initialOption =
     eventIconOptions.find(
-      (option) => option.symbol === initialSymbol && option.tone === initialTone,
+      (option) =>
+        option.symbol === initialSymbol && option.tone === initialTone,
     ) ?? eventIconOptions[0];
   const [label, setLabel] = useState(initialLabel);
-  const [selectedIcon, setSelectedIcon] = useState<EventIconOption>(initialOption);
+  const [selectedIcon, setSelectedIcon] =
+    useState<EventIconOption>(initialOption);
 
   useEffect(() => {
     if (!isOpen) {
@@ -60,9 +62,6 @@ export function EventDialog({
       <div className="w-full max-w-[22rem] rounded-[24px] bg-[var(--calendar-paper)] p-4 shadow-[0_32px_80px_-34px_rgba(35,68,111,0.35)] sm:max-w-md sm:rounded-[28px] sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-400">
-              Event
-            </p>
             <h2 className="mt-1.5 text-xl font-medium tracking-tight text-slate-800 sm:mt-2 sm:text-2xl">
               Add Event
             </h2>
@@ -87,7 +86,7 @@ export function EventDialog({
             autoFocus
             value={label}
             onChange={(event) => setLabel(event.target.value)}
-            placeholder="Dinner, birthday, workshop..."
+            placeholder="For eg. TUF's birthday"
             className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition focus:border-[var(--calendar-accent)] focus:ring-4 focus:ring-[var(--calendar-accent-soft)] sm:rounded-2xl sm:px-4 sm:py-3"
           />
         </div>
