@@ -1,26 +1,132 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #edf3fb;
+  --foreground: #243042;
+  --calendar-accent: #1ea3d8;
+  --calendar-accent-soft: #dbf1fa;
+  --calendar-paper: #fffdf9;
+  --calendar-line: rgba(178, 198, 220, 0.35);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), sans-serif;
+  min-height: 100vh;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(30, 163, 216, 0.2);
+}
+
+.calendar-page {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.95), transparent 26%),
+    linear-gradient(180deg, #f7fbff 0%, #edf3fb 100%);
+}
+
+.calendar-card {
+  box-shadow:
+    0 32px 80px -34px rgba(35, 68, 111, 0.35),
+    0 10px 30px -18px rgba(35, 68, 111, 0.2);
+}
+
+.notes-paper {
+  --notes-font-size: 1rem;
+  --notes-line-height: 2.2rem;
+  --notes-rule-offset: calc(var(--notes-line-height) - 0.4rem);
+  background-image: linear-gradient(
+    to bottom,
+    transparent calc(var(--notes-line-height) - 1px),
+    var(--calendar-line) calc(var(--notes-line-height) - 1px)
+  );
+  background-size: 100% var(--notes-line-height);
+  background-repeat: repeat-y;
+  background-position: 0 var(--notes-rule-offset);
+}
+
+.notes-input {
+  background: transparent;
+  border: none;
+  color: rgb(71 85 105);
+  display: block;
+  font-size: var(--notes-font-size);
+  line-height: var(--notes-line-height);
+  outline: none;
+  padding: 0.05rem 0 0;
+  resize: none;
+  width: 100%;
+}
+
+.notes-input::placeholder {
+  color: rgb(203 213 225);
+}
+
+@media (min-width: 768px) {
+  .notes-paper {
+    --notes-font-size: 1.125rem;
+    --notes-line-height: 2.35rem;
+    --notes-rule-offset: calc(var(--notes-line-height) - 0.45rem);
+  }
+}
+
+.calendar-grid-flip-out {
+  animation: calendar-flip-out 0.24s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: center;
+}
+
+.calendar-grid-flip-in {
+  animation: calendar-flip-in 0.24s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: center;
+}
+
+@keyframes calendar-flip-out {
+  0% {
+    opacity: 1;
+    transform: rotateY(0deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: rotateY(82deg);
+  }
+}
+
+@keyframes calendar-flip-in {
+  0% {
+    opacity: 0;
+    transform: rotateY(-82deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-grid-flip-in,
+  .calendar-grid-flip-out {
+    animation: none;
+  }
 }
