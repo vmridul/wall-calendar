@@ -5,6 +5,7 @@ type CalendarMonthImage = {
 };
 
 export const calendarMonthImages: CalendarMonthImage[] = [
+  //colors are currently hardcoded for simplicity :)
   {
     months: [0],
     color: "#595040",
