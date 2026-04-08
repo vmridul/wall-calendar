@@ -88,7 +88,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
   const publicHolidays = publicHolidaysByYear[visibleYear] ?? [];
   const todayDate = useMemo(() => new Date(`${todayIso}T00:00:00`), [todayIso]);
   const selectedRangeNoteKey =
-    range.start && range.end ? getRangeNoteKey(range.start, range.end) : null;
+    range.start && range.end ? getRangeNoteKey(range.start, range.end, monthKey) : null;
   const isTodayMonthVisible =
     visibleMonth.getFullYear() === todayDate.getFullYear() &&
     visibleMonth.getMonth() === todayDate.getMonth();
@@ -371,7 +371,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
       return;
     }
 
-    const noteKey = getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end);
+    const noteKey = getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end, monthKey);
 
     setRangeNotes((currentRangeNotes) => {
       if (!value) {
@@ -456,6 +456,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
 
   const selectedRangeLabel = getSelectedRangeLabel();
   const rangeNoteItems = Object.entries(rangeNotes)
+    .filter(([key]) => key.startsWith(`${monthKey}:`))
     .map(([key, value]) => ({
       key,
       label:
@@ -566,7 +567,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
           rangeNoteDraft
             ? `${rangeNoteDraft.start}-${rangeNoteDraft.end}-${
                 rangeNotes[
-                  getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end)
+                  getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end, monthKey)
                 ] ?? ""
               }`
             : "range-note-dialog"
@@ -576,7 +577,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
         initialValue={
           rangeNoteDraft
             ? rangeNotes[
-                getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end)
+                getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end, monthKey)
               ] ?? ""
             : ""
         }

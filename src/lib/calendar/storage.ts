@@ -24,8 +24,8 @@ export function writeMonthNote(monthKey: string, value: string) {
   window.localStorage.setItem(getMonthNoteStorageKey(monthKey), value);
 }
 
-export function getRangeNoteKey(startIso: string, endIso: string) {
-  return `${startIso}:${endIso}`;
+export function getRangeNoteKey(startIso: string, endIso: string, monthKey: string) {
+  return `${monthKey}:${startIso}:${endIso}`;
 }
 
 export function readRangeNotes() {
