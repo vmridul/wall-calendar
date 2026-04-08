@@ -445,7 +445,9 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
   }
 
   function getRangeLabelFromKey(rangeNoteKey: string) {
-    const [startIso, endIso] = rangeNoteKey.split(":");
+    const parts = rangeNoteKey.split(":");
+    const startIso = parts[1];
+    const endIso = parts[2];
 
     if (!startIso || !endIso) {
       return rangeNoteKey;
