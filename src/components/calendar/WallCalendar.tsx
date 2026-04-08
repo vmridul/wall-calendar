@@ -27,7 +27,7 @@ import {
   writeMonthNote,
   writeRangeNotes,
 } from "@/lib/calendar/storage";
-import { getMonthImage } from "@/lib/calendar/theme";
+import { getMonthColor, getMonthImage } from "@/lib/calendar/theme";
 import { CalendarDateRange, CalendarEvent } from "@/types/calendar";
 
 type WallCalendarProps = {
@@ -82,6 +82,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
     return years;
   }, [year]);
   const monthImage = getMonthImage(visibleMonth.getMonth());
+  const monthColor = getMonthColor(visibleMonth.getMonth());
   const previewRange = getPreviewRange(range, hoverDate);
   const visibleYear = visibleMonth.getFullYear();
   const publicHolidays = publicHolidaysByYear[visibleYear] ?? [];
@@ -477,14 +478,21 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
     });
 
   return (
-    <div className="calendar-card relative w-full max-w-6xl overflow-hidden rounded-[28px] bg-[var(--calendar-paper)]">
+    <div
+      className="calendar-card relative w-full max-w-6xl overflow-hidden rounded-[28px] bg-[var(--calendar-paper)]"
+      style={{
+        "--calendar-accent": monthColor,
+        "--calendar-accent-soft": `${monthColor}20`,
+        "--calendar-accent-soft-hover": `${monthColor}35`,
+      } as React.CSSProperties}
+    >
       <TopRings />
 
       <div
         ref={calendarFaceRef}
         className="will-change-transform"
       >
-        <HeroImagePanel image={monthImage} month={monthName} year={year} />
+        <HeroImagePanel image={monthImage} month={monthName} year={year} color={monthColor} />
 
         <div className="relative z-30 flex flex-col gap-10 px-5 py-6 sm:px-8 md:flex-row md:gap-14 md:px-10 md:py-10 lg:px-12">
           <CalendarPanel
@@ -509,6 +517,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
             }
             onPreviousMonth={() => changeMonth(-1)}
             onNextMonth={() => changeMonth(1)}
+            color={monthColor}
           />
 
           <NotesPanel

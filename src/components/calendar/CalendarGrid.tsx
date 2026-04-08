@@ -21,6 +21,7 @@ type CalendarGridProps = {
   onAddRangeNote: () => void;
   onAddEvent: (iso: string) => void;
   onDeleteEvent: (eventId: string) => void;
+  color: string;
 };
 
 export function CalendarGrid({
@@ -36,6 +37,7 @@ export function CalendarGrid({
   onAddRangeNote,
   onAddEvent,
   onDeleteEvent,
+  color,
 }: CalendarGridProps) {
   const gridRef = useRef<HTMLDivElement | null>(null);
   const closeTimeoutRef = useRef<number | null>(null);
@@ -145,6 +147,7 @@ export function CalendarGrid({
             onHover={onHover}
             onHoverCardOpen={openHoverCard}
             onHoverCardClose={closeHoverCardSoon}
+            color={color}
           />
         );
       })}

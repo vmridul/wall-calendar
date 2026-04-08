@@ -1,6 +1,10 @@
 import { getWeekdayNames } from "@/lib/calendar/date";
 
-export function WeekdayHeader() {
+type WeekdayHeaderProps = {
+  color: string;
+};
+
+export function WeekdayHeader({ color }: WeekdayHeaderProps) {
   const weekdays = getWeekdayNames();
 
   return (
@@ -11,7 +15,7 @@ export function WeekdayHeader() {
         return (
           <span
             key={day}
-            className={isWeekend ? "text-[var(--calendar-accent)]" : undefined}
+            style={isWeekend ? { color } : undefined}
           >
             {day}
           </span>

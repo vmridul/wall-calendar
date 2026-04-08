@@ -27,6 +27,7 @@ type CalendarPanelProps = {
   onYearChange: (year: number) => void;
   onPreviousMonth: () => void;
   onNextMonth: () => void;
+  color: string;
 };
 
 export function CalendarPanel({
@@ -49,6 +50,7 @@ export function CalendarPanel({
   onYearChange,
   onPreviousMonth,
   onNextMonth,
+  color,
 }: CalendarPanelProps) {
   return (
     <section className="w-full md:w-7/12">
@@ -61,7 +63,7 @@ export function CalendarPanel({
         onPreviousMonth={onPreviousMonth}
         onNextMonth={onNextMonth}
       />
-      <WeekdayHeader />
+      <WeekdayHeader color={color} />
       <CalendarGrid
         days={days}
         range={range}
@@ -75,6 +77,7 @@ export function CalendarPanel({
         onAddRangeNote={onAddRangeNote}
         onAddEvent={onAddEvent}
         onDeleteEvent={onDeleteEvent}
+        color={color}
       />
     </section>
   );

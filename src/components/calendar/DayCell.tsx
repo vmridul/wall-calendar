@@ -23,19 +23,8 @@ type DayCellProps = {
     anchorElement: HTMLElement;
   }) => void;
   onHoverCardClose: () => void;
+  color: string;
 };
-
-function getTextColor(day: CalendarDay) {
-  if (!day.isCurrentMonth) {
-    return "text-slate-300";
-  }
-
-  if (day.isWeekend) {
-    return "text-[var(--calendar-accent)]";
-  }
-
-  return "text-slate-700";
-}
 
 export function DayCell({
   day,
@@ -50,6 +39,7 @@ export function DayCell({
   onHover,
   onHoverCardOpen,
   onHoverCardClose,
+  color,
 }: DayCellProps) {
   const isStart = day.iso === range.start;
   const isEnd = day.iso === range.end;
@@ -76,13 +66,17 @@ export function DayCell({
                 event.stopPropagation();
                 onAddRangeNote();
               }}
-              className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--calendar-accent)] text-white shadow-sm transition hover:opacity-90"
+              className="flex h-5 w-5 items-center justify-center rounded-full text-white shadow-sm transition hover:opacity-90"
+              style={{ backgroundColor: color }}
               aria-label="Add note for selected range"
             >
               <PencilIcon className="h-2.5 w-2.5" />
             </button>
           ) : null}
-          <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--calendar-accent)] shadow-sm ring-1 ring-slate-200">
+          <span
+            className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] shadow-sm ring-1 ring-slate-200"
+            style={{ color }}
+          >
             <span>{selectedDayCount} days</span>
             {showsClearSelection ? (
               <button
@@ -91,7 +85,8 @@ export function DayCell({
                   event.stopPropagation();
                   onClearSelection();
                 }}
-                className="flex h-3.5 w-3.5 items-center justify-center rounded-full text-[var(--calendar-accent)] transition hover:bg-[var(--calendar-accent-soft)]"
+                className="flex h-3.5 w-3.5 items-center justify-center rounded-full transition hover:opacity-70"
+                style={{ color }}
                 aria-label="Clear selected range"
               >
                 <span className="text-[10px] leading-none">×</span>
@@ -104,7 +99,7 @@ export function DayCell({
       {(isBetween || isStart || isEnd || showsPreviewTail) && (
         <div
           className={[
-            "absolute inset-y-2 bg-[var(--calendar-accent-soft)] transition-all duration-200",
+            "absolute inset-y-2 transition-all duration-200",
             isBetween && "left-0 right-0",
             isStart && (activeRange.end ? "left-1/2 right-0" : "hidden"),
             isEnd && "left-0 right-1/2",
@@ -112,6 +107,7 @@ export function DayCell({
           ]
             .filter(Boolean)
             .join(" ")}
+          style={{ backgroundColor: `${color}20` }}
         />
       )}
 
@@ -119,6 +115,34 @@ export function DayCell({
         type="button"
         onClick={() => onSelect(day.iso)}
         aria-label={day.iso}
+        className={[
+          "relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-lg transition duration-200 md:h-11 md:w-11",
+          day.isCurrentMonth && !day.isWeekend && "text-slate-700",
+          !day.isCurrentMonth && "text-slate-300",
+          day.isToday && !isStart && !isEnd && "ring-1 ring-slate-200",
+          isBetween && "font-semibold text-slate-900",
+          !isStart && !isEnd && !isBetween && "hover:bg-[var(--calendar-accent-soft-hover)] hover:text-[var(--calendar-accent)]",
+          (isStart || isEnd) && "scale-105 bg-[var(--calendar-accent)] font-semibold text-white shadow-md",
+          showsPreviewTail && "bg-[var(--calendar-accent-soft)] text-slate-900 hover:bg-[var(--calendar-accent-soft-hover)]",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        style={
+          (isStart || isEnd)
+            ? {
+                backgroundColor: color,
+                color: "white",
+                transform: "scale(1.05)",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              }
+            : day.isCurrentMonth && day.isWeekend
+              ? { color }
+              : showsPreviewTail
+                ? {
+                    backgroundColor: `${color}33`,
+                  }
+                : undefined
+        }
         onMouseEnter={(event) => {
           onHover(day.iso);
           if (day.isCurrentMonth) {
@@ -143,22 +167,6 @@ export function DayCell({
           }
         }}
         onBlur={onHoverCardClose}
-        className={[
-          "relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-lg transition duration-200 md:h-11 md:w-11",
-          getTextColor(day),
-          day.isToday && !isStart && !isEnd && "ring-1 ring-slate-200",
-          isBetween && "font-semibold text-slate-900",
-          !isStart &&
-            !isEnd &&
-            !isBetween &&
-            "hover:scale-[0.94] hover:bg-[var(--calendar-accent-soft)] hover:text-[var(--calendar-accent)]",
-          (isStart || isEnd) &&
-            "scale-105 bg-[var(--calendar-accent)] font-semibold text-white shadow-md",
-          showsPreviewTail &&
-            "bg-[var(--calendar-accent-soft)] text-slate-900 hover:bg-[var(--calendar-accent-soft)]",
-        ]
-          .filter(Boolean)
-          .join(" ")}
         aria-pressed={isStart || isEnd || isBetween}
       >
         {day.dayNumber}
