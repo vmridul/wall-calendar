@@ -482,7 +482,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
 
   return (
     <div
-      className="calendar-card relative w-full max-w-6xl overflow-hidden rounded-[28px] bg-[var(--calendar-paper)]"
+      className="calendar-card relative w-full max-w-6xl rounded-[28px] bg-[var(--calendar-paper)]"
       style={{
         "--calendar-accent": monthColor,
         "--calendar-accent-soft": `${monthColor}20`,
@@ -497,7 +497,7 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
       >
         <HeroImagePanel image={monthImage} month={monthName} year={year} color={monthColor} />
 
-        <div className="relative z-30 flex flex-col gap-10 px-5 py-6 sm:px-8 md:flex-row md:gap-14 md:px-10 md:py-10 lg:px-12">
+        <div className="relative z-30 flex flex-col gap-10 overflow-hidden px-5 py-6 sm:px-8 md:flex-row md:gap-14 md:px-10 md:py-10 lg:px-12">
           <CalendarPanel
             month={visibleMonth.getMonth()}
             year={year}

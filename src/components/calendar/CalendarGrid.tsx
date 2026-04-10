@@ -124,7 +124,7 @@ export function CalendarGrid({
   }
 
   return (
-    <div ref={gridRef} className="relative grid grid-cols-7 gap-y-2">
+    <div ref={gridRef} className="relative z-10 grid grid-cols-7 gap-y-2">
       {days.map((day) => {
         const dayUserEvents = userEvents.filter((event) => event.iso === day.iso);
         const dayPublicHolidays = publicHolidays.filter((event) => event.iso === day.iso);

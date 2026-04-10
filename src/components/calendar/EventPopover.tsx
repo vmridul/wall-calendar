@@ -26,7 +26,7 @@ export function EventPopover({
       style={style}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className={`absolute z-[999] w-36 -translate-x-1/2 -translate-y-full rounded-[18px] border border-slate-100 bg-white/98 p-1.5 shadow-[0_14px_28px_-22px_rgba(36,48,66,0.35)] transition duration-150 ${
+      className={`absolute z-[9999] w-36 -translate-x-1/2 -translate-y-full rounded-[18px] border border-slate-100 bg-white/98 p-1.5 shadow-[0_14px_28px_-22px_rgba(36,48,66,0.35)] transition duration-150 ${
         isOpen
           ? "pointer-events-auto opacity-100 scale-100"
           : "pointer-events-none opacity-0 scale-95"

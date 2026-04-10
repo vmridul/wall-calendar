@@ -56,9 +56,9 @@ export function DayCell({
     previewRange?.end === day.iso && previewRange.end !== previewRange.start;
 
   return (
-    <div className="group relative flex min-h-14 justify-center py-1 hover:z-20">
+    <div className="group relative z-0 flex min-h-10 md:min-h-14 justify-center py-1">
       {showsSelectedDayCount ? (
-        <div className="absolute -top-5 left-1/2 z-20 inline-flex -translate-x-1/2 items-center gap-1.5">
+        <div className="absolute -top-5 left-1/2 z-50 inline-flex -translate-x-1/2 items-center gap-1.5">
           {showsClearSelection ? (
             <button
               type="button"

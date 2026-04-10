@@ -16,7 +16,7 @@ export function SelectedRangeNote({
   return (
     <div
       className={[
-        "group relative mb-4 rounded-2xl border bg-white/80 px-4 py-3 shadow-sm",
+        "group relative mb-4 rounded-2xl border bg-white/80 px-4 py-3",
         isActive
           ? "border-[var(--calendar-accent)] ring-2 ring-[var(--calendar-accent-soft)]"
           : "border-slate-200",

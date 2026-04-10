@@ -25,23 +25,25 @@ export function NotesPanel({
   textareaRef,
 }: NotesPanelProps) {
   return (
-    <section className="flex w-full flex-col md:w-5/12">
+    <section className="relative z-0 flex w-full flex-col md:w-5/12">
       <NotesHeader />
-      {rangeNotes.map((rangeNote) => (
-        <SelectedRangeNote
-          key={rangeNote.key}
-          rangeNoteKey={rangeNote.key}
-          rangeLabel={rangeNote.label}
-          note={rangeNote.note}
-          isActive={rangeNote.isActive}
-          onRemove={onRemoveRangeNote}
+      <div className="flex-1 overflow-y-auto md:max-h-[360px] lg:max-h-[460px]">
+        {rangeNotes.map((rangeNote) => (
+          <SelectedRangeNote
+            key={rangeNote.key}
+            rangeNoteKey={rangeNote.key}
+            rangeLabel={rangeNote.label}
+            note={rangeNote.note}
+            isActive={rangeNote.isActive}
+            onRemove={onRemoveRangeNote}
+          />
+        ))}
+        <NotesTextarea
+          value={value}
+          onChange={onChange}
+          textareaRef={textareaRef}
         />
-      ))}
-      <NotesTextarea
-        value={value}
-        onChange={onChange}
-        textareaRef={textareaRef}
-      />
+      </div>
     </section>
   );
 }

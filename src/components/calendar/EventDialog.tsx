@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { EventIconOptionButton } from "@/components/calendar/EventIconOptionButton";
 import { eventIconOptions } from "@/lib/calendar/events";
 import { EventIconOption } from "@/types/calendar";
@@ -32,6 +32,7 @@ export function EventDialog({
   const [label, setLabel] = useState(initialLabel);
   const [selectedIcon, setSelectedIcon] =
     useState<EventIconOption>(initialOption);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -44,12 +45,35 @@ export function EventDialog({
       }
     }
 
+    function handleResize() {
+      if (dialogRef.current && visualViewport) {
+        const viewportHeight = visualViewport.height;
+        const dialogRect = dialogRef.current.getBoundingClientRect();
+        const dialogBottom = dialogRect.bottom;
+
+        if (dialogBottom > viewportHeight) {
+          const offset = dialogBottom - viewportHeight + 16;
+          dialogRef.current.style.transform = `translateY(-${offset}px)`;
+        } else {
+          dialogRef.current.style.transform = "";
+        }
+      }
+    }
+
     window.addEventListener("keydown", handleKeyDown);
     document.body.style.overflow = "hidden";
+
+    if (visualViewport) {
+      visualViewport.addEventListener("resize", handleResize);
+      handleResize();
+    }
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
+      if (visualViewport) {
+        visualViewport.removeEventListener("resize", handleResize);
+      }
     };
   }, [isOpen, onClose]);
 
@@ -59,7 +83,10 @@ export function EventDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 px-3 sm:px-4">
-      <div className="w-full max-w-[22rem] rounded-[24px] bg-[var(--calendar-paper)] p-4 shadow-[0_32px_80px_-34px_rgba(35,68,111,0.35)] sm:max-w-md sm:rounded-[28px] sm:p-6">
+      <div
+        ref={dialogRef}
+        className="w-full max-w-[22rem] rounded-[24px] bg-[var(--calendar-paper)] p-4 shadow-[0_32px_80px_-34px_rgba(35,68,111,0.35)] sm:max-w-md sm:rounded-[28px] sm:p-6"
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="mt-1.5 text-xl font-medium tracking-tight text-slate-800 sm:mt-2 sm:text-2xl">

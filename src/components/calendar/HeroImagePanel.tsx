@@ -10,7 +10,7 @@ type HeroImagePanelProps = {
 
 export function HeroImagePanel({ image, month, year, color }: HeroImagePanelProps) {
   return (
-    <section className="relative h-[330px] overflow-hidden bg-slate-200 sm:h-[390px] md:h-[460px]">
+    <section className="relative h-[300px] overflow-hidden bg-slate-200 sm:h-[390px] md:h-[460px]">
       <Image
         src={image}
         alt={`${month} calendar`}
