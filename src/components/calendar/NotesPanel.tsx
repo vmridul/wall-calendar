@@ -56,7 +56,7 @@ export function NotesPanel({
         <NotesHeader />
       </div>
       <div
-        className={`flex-1 mt-4 overflow-y-auto md:mt-0 md:max-h-[360px] lg:max-h-[460px] ${
+        className={`flex-1 mt-4 overflow-y-auto md:mt-0 md:max-h-[360px] lg:max-h-[400px] ${
           isOpen ? "" : "hidden md:block"
         }`}
       >

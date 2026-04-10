@@ -88,7 +88,9 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
   const publicHolidays = publicHolidaysByYear[visibleYear] ?? [];
   const todayDate = useMemo(() => new Date(`${todayIso}T00:00:00`), [todayIso]);
   const selectedRangeNoteKey =
-    range.start && range.end ? getRangeNoteKey(range.start, range.end, monthKey) : null;
+    range.start && range.end
+      ? getRangeNoteKey(range.start, range.end, monthKey)
+      : null;
   const isTodayMonthVisible =
     visibleMonth.getFullYear() === todayDate.getFullYear() &&
     visibleMonth.getMonth() === todayDate.getMonth();
@@ -193,7 +195,11 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
   const changeMonth = useCallback(
     (offset: number) => {
       animateToMonth(
-        new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + offset, 1),
+        new Date(
+          visibleMonth.getFullYear(),
+          visibleMonth.getMonth() + offset,
+          1,
+        ),
       );
     },
     [animateToMonth, visibleMonth],
@@ -371,7 +377,11 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
       return;
     }
 
-    const noteKey = getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end, monthKey);
+    const noteKey = getRangeNoteKey(
+      rangeNoteDraft.start,
+      rangeNoteDraft.end,
+      monthKey,
+    );
 
     setRangeNotes((currentRangeNotes) => {
       if (!value) {
@@ -483,21 +493,25 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
   return (
     <div
       className="calendar-card relative w-full max-w-6xl rounded-[28px] bg-[var(--calendar-paper)]"
-      style={{
-        "--calendar-accent": monthColor,
-        "--calendar-accent-soft": `${monthColor}20`,
-        "--calendar-accent-soft-hover": `${monthColor}35`,
-      } as React.CSSProperties}
+      style={
+        {
+          "--calendar-accent": monthColor,
+          "--calendar-accent-soft": `${monthColor}20`,
+          "--calendar-accent-soft-hover": `${monthColor}35`,
+        } as React.CSSProperties
+      }
     >
       <TopRings />
 
-      <div
-        ref={calendarFaceRef}
-        className="will-change-transform"
-      >
-        <HeroImagePanel image={monthImage} month={monthName} year={year} color={monthColor} />
+      <div ref={calendarFaceRef} className="will-change-transform">
+        <HeroImagePanel
+          image={monthImage}
+          month={monthName}
+          year={year}
+          color={monthColor}
+        />
 
-        <div className="relative z-30 flex flex-col gap-8 px-3 py-5 sm:px-8 md:flex-row md:gap-14 md:px-10 md:py-10 lg:px-12">
+        <div className="relative z-30 flex flex-col gap-4 px-3 py-5 sm:px-8 md:flex-row md:gap-14 md:px-10 md:py-10 lg:px-12">
           <CalendarPanel
             month={visibleMonth.getMonth()}
             year={year}
@@ -569,7 +583,11 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
           rangeNoteDraft
             ? `${rangeNoteDraft.start}-${rangeNoteDraft.end}-${
                 rangeNotes[
-                  getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end, monthKey)
+                  getRangeNoteKey(
+                    rangeNoteDraft.start,
+                    rangeNoteDraft.end,
+                    monthKey,
+                  )
                 ] ?? ""
               }`
             : "range-note-dialog"
@@ -578,9 +596,13 @@ export function WallCalendar({ initialMonthIso, todayIso }: WallCalendarProps) {
         rangeLabel={getRangeNoteLabel()}
         initialValue={
           rangeNoteDraft
-            ? rangeNotes[
-                getRangeNoteKey(rangeNoteDraft.start, rangeNoteDraft.end, monthKey)
-              ] ?? ""
+            ? (rangeNotes[
+                getRangeNoteKey(
+                  rangeNoteDraft.start,
+                  rangeNoteDraft.end,
+                  monthKey,
+                )
+              ] ?? "")
             : ""
         }
         onClose={() => setRangeNoteDraft(null)}
