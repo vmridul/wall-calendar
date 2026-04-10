@@ -74,7 +74,7 @@ export function DayCell({
             </button>
           ) : null}
           <span
-            className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] shadow-sm ring-1 ring-slate-200"
+            className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] ring-1 ring-slate-200"
             style={{ color }}
           >
             <span>{selectedDayCount} days</span>
@@ -103,7 +103,7 @@ export function DayCell({
             isBetween && "left-0 right-0",
             isStart && (activeRange.end ? "left-1/2 right-0" : "hidden"),
             isEnd && "left-0 right-1/2",
-            showsPreviewTail && "left-0 right-1/2 opacity-70",
+            showsPreviewTail ? "left-0 right-1/2" : "",
           ]
             .filter(Boolean)
             .join(" ")}
@@ -121,14 +121,18 @@ export function DayCell({
           !day.isCurrentMonth && "text-slate-300",
           day.isToday && !isStart && !isEnd && "ring-1 ring-slate-200",
           isBetween && "font-semibold text-slate-900",
-          !isStart && !isEnd && !isBetween && "hover:bg-[var(--calendar-accent-soft-hover)] hover:text-[var(--calendar-accent)]",
-          (isStart || isEnd) && "scale-105 bg-[var(--calendar-accent)] font-semibold text-white shadow-md",
-          showsPreviewTail && "bg-[var(--calendar-accent-soft)] text-slate-900 hover:bg-[var(--calendar-accent-soft-hover)]",
+          !isStart &&
+            !isEnd &&
+            !isBetween &&
+            "hover:bg-[#fee9e0] hover:text-[var(--calendar-accent)]",
+          (isStart || isEnd) &&
+            "scale-105 bg-[[var(--calendar-accent)]] font-semibold text-white shadow-md",
+          showsPreviewTail && "bg-[#fee9e0] text-slate-900 hover:bg-[#fee9e0]",
         ]
           .filter(Boolean)
           .join(" ")}
         style={
-          (isStart || isEnd)
+          isStart || isEnd
             ? {
                 backgroundColor: color,
                 color: "white",
@@ -137,11 +141,7 @@ export function DayCell({
               }
             : day.isCurrentMonth && day.isWeekend
               ? { color }
-              : showsPreviewTail
-                ? {
-                    backgroundColor: `${color}33`,
-                  }
-                : undefined
+              : undefined
         }
         onMouseEnter={(event) => {
           onHover(day.iso);

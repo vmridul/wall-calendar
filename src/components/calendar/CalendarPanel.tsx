@@ -53,7 +53,7 @@ export function CalendarPanel({
   color,
 }: CalendarPanelProps) {
   return (
-    <section className="relative z-10 w-full md:w-7/12">
+    <section className="relative z-10 w-full overflow-visible md:w-7/12">
       <CalendarHeader
         month={month}
         year={year}
