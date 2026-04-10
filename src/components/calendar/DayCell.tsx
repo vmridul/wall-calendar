@@ -117,17 +117,13 @@ export function DayCell({
         aria-label={day.iso}
         className={[
           "relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-lg transition duration-200 md:h-11 md:w-11",
-          day.isCurrentMonth && !day.isWeekend && "text-slate-700",
-          !day.isCurrentMonth && "text-slate-300",
+          isBetween && "font-semibold",
+          !isBetween && day.isCurrentMonth && !day.isWeekend && "text-slate-700",
+          !isBetween && !day.isCurrentMonth && "text-slate-300",
           day.isToday && !isStart && !isEnd && "ring-1 ring-slate-200",
-          isBetween && "font-semibold text-slate-900",
-          !isStart &&
-            !isEnd &&
-            !isBetween &&
-            "hover:bg-[#fee9e0] hover:text-[var(--calendar-accent)]",
-          (isStart || isEnd) &&
-            "scale-105 bg-[[var(--calendar-accent)]] font-semibold text-white shadow-md",
-          showsPreviewTail && "bg-[#fee9e0] text-slate-900 hover:bg-[#fee9e0]",
+          !isStart && !isEnd && !isBetween && "hover:bg-[color-mix(in_srgb,var(--calendar-accent),white_70%)]",
+          (isStart || isEnd) && "scale-105 font-semibold text-white shadow-md",
+          showsPreviewTail && "hover:bg-[color-mix(in_srgb,var(--calendar-accent),white_70%)]",
         ]
           .filter(Boolean)
           .join(" ")}
