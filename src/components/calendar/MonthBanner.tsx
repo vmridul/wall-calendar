@@ -10,7 +10,7 @@ export function MonthBanner({ month, year, color }: MonthBannerProps) {
       <svg
         viewBox="0 0 1000 200"
         preserveAspectRatio="none"
-        className="h-30 w-full drop-shadow-lg sm:h-40 md:h-48"
+        className="h-20 w-full drop-shadow-lg sm:h-40 md:h-48"
       >
         <path
           style={{ fill: color }}
@@ -18,11 +18,11 @@ export function MonthBanner({ month, year, color }: MonthBannerProps) {
         />
       </svg>
 
-      <div className="absolute bottom-5 right-5 flex flex-col items-end text-right text-white sm:bottom-6 md:bottom-9 md:right-12">
-        <span className="text-xl font-medium tracking-tight text-white/90 md:text-3xl">
+      <div className="absolute bottom-3 right-4 flex flex-col items-end text-right text-white sm:bottom-6 md:bottom-9 md:right-12">
+        <span className="text-base font-medium tracking-tight text-white/90 md:text-3xl">
           {year}
         </span>
-        <span className="font-[var(--font-cormorant-garamond)] text-4xl leading-none tracking-[0.08em] md:text-6xl">
+        <span className="font-[var(--font-cormorant-garamond)] text-2xl leading-none tracking-[0.08em] md:text-6xl">
           {month.toUpperCase()}
         </span>
       </div>

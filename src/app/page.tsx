@@ -10,7 +10,7 @@ export default function Home() {
   const todayIso = toIsoDate(now);
 
   return (
-    <main className="calendar-page flex min-h-screen items-center justify-center px-4 py-6 sm:px-6 md:px-8">
+    <main className="calendar-page flex min-h-screen items-center justify-center p-2 sm:px-6 sm:py-6 md:px-8 md:py-8">
       <WallCalendar initialMonthIso={initialMonthIso} todayIso={todayIso} />
     </main>
   );
